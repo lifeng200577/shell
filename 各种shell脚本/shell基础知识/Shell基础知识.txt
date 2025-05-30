@@ -1,0 +1,1000 @@
+shell基础知识
+
+前言
+
+Shell 是一个应用程序，它连接了用户和 Linux 内核，让用户能够更加高效、安全、低成本地使用 Linux 内核，这就是 Shell 的本质。然而Shell本身并不是内核的一部分，它只是站在内核的基础上编写的一个应用程序，但是 Shell 也有着它的特殊性，就是开机立马启动，并呈现在用户面前；用户通过 Shell 来使用 Linux，不启动 Shell 的话，用户就没办法使用 Linux。
+
+Shell 也是一种脚本语言，是系统命令的集合，可以使用逻辑判断、循环等语法，可以自定义函数，我们编写完源码后不用编译，直接运行源码即可。
+
+Shell脚本是在Linux的shell中运行的，所以称为shell脚本。本质上，shell脚本就是一些命令的集合。shell脚本可以实现自动化运维，所以能帮助我们很方便的管理服务器；比如我们可以指定一个任务计划，定时的去执行某个shell脚本已满足需求。
+
+
+
+shell脚本结构与执行
+
+脚本结构
+
+第一行一定是：#! /bin/bash。该命令说明，该文件使用的是bash语法，如果不设置该行，则该脚本不会被执行。以#开头的行作为解释说明。Shell脚本通常以sh为后缀，用于区分这是一个shell脚本。
+
+下面我们来编写一个shell脚本，如下所示：
+
+[root@localhost ~]# mkdir shell
+
+[root@localhost ~]# cd shell
+
+[root@localhost shell]# vi 1.sh     //写入如下内容
+
+#!/bin/bash
+
+touch /tmp/1.txt
+
+chmod 600 /tmp/2.txt
+
+mv /tmp/1.txt /tmp/2.txt
+
+
+
+脚本执行
+
+接下来我们执行1.1编写的脚本，如下所示：
+
+[root@localhost shell]# bash 1.sh
+
+
+
+其实shell脚本还有一种执行方法，但前提是脚本本身要有执行权限，所以在执行前我们需要给脚本加一个x权限。如下所示：
+
+[root@localhost shell]# ./1.sh
+
+-bash: ./1.sh: Permission denied
+
+[root@localhost shell]# chmod +x 1.sh    //赋予权限
+
+[root@localhost shell]# ./1.sh        //执行脚本
+
+
+
+常用命令
+
+2.1 查看脚本执行过程
+
+[root@localhost shell]# bash -x 1.sh
+
++ touch /tmp/1.txt
+
++ chmod 600 /tmp/2.txt
+
++ mv /tmp/1.txt /tmp/2.txt
+
+
+
+2.2 查看脚本是否有语法错误
+
+[root@localhost shell]# bash -n 1.sh
+
+
+
+2.3 date命令
+
+2.3.1显示年、月、日
+
+date +%Y-%m-%d    #年（以四位数字格式打印年份）月日
+
+date +%y-%m-%d    #年（以两位数字格式打印年份）月日
+
+date +%T          #年（以四位数字格式打印年份）月日
+
+
+
+2.3.2显示小时、分钟、 秒
+
+date +%H:%M:%S    #小时分钟秒
+
+date +%T           #小时分钟秒
+
+
+
+2.3.3 显示星期
+
+date +%w          #一周中的第几天
+
+date +%W          #一年中的第几周
+
+
+
+2.3.4 时间戳
+
+使用命令date +%s 显示从 1970 年 1 月 1 日 00:00:00 UTC 到目前为止的秒数。示例如下：
+
+
+
+使用命令 date -d @164082388 显示输入秒数之前的时间。示例如下：
+
+
+
+2.3.5 显示一个小时之前/之后
+
+date -d "+1 hour"    #一个小时后
+
+date -d "-1 hour"    #一个小时前
+
+
+
+2.3.6 表示一天之前/之后
+
+date -d "+1day"     #一天后
+
+date -d "-1 day"     #一天前
+
+
+
+shell脚本中的变量
+
+在shell脚本中使用变量可以节省时间并且使我们的脚本更加专业，所以当我们编写一个脚本时，就可以使用变量来代替某个使用频繁并且长度很长的字符串。变量的格式：“变量名=变量的值”。
+
+引用命令的结果
+
+当我们引用某个命令的结果时，可以使用变量替代，示例如下：
+
+[root@localhost ~]# a=`date +%w`         #将命令结果赋值给变量
+
+[root@localhost ~]# echo $a
+
+6
+
+[root@localhost ~]# a=$(date +%w)        #将命令结果赋值给变量
+
+[root@localhost ~]# echo $a
+
+6
+
+
+
+由上例可知，如果我们需要将命令结果赋值给变量，可以采用示例中两种形式的其一来实现。
+
+与用户交互
+
+示例如下：
+
+[root@localhost ~]# read -p "请输入一个数字:" n
+
+请输入一个数字:10
+
+[root@localhost ~]# echo $n
+
+10
+
+[root@localhost ~]# read -p "请输入一个数字:"
+
+请输入一个数字:100
+
+[root@localhost ~]# echo $REPLY
+
+100
+
+
+
+内置变量
+
+示例如下：
+
+[root@localhost shell]# vi bian.sh         #创建一个名为bian.sh的脚本
+
+[root@localhost shell]# cat bian.sh
+
+#!/bin/bash
+
+echo "\$1=$1"
+
+echo "第二个参数是$2"
+
+echo "第三个参数是$3"
+
+echo "本脚本一共有$#个参数"
+
+echo "\$0是$0"
+
+
+
+[root@localhost shell]# sh bian.sh         #执行脚本
+
+$1=
+
+第二个参数是
+
+第三个参数是
+
+本脚本一共有0个参数
+
+$0是bian.sh
+
+
+
+[root@localhost shell]# sh bian.sh a b         #再次执行脚本
+
+$1=a
+
+第二个参数是b
+
+第三个参数是
+
+本脚本一共有2个参数
+
+$0是bian.sh                       # $0就是脚本的名字
+
+
+
+数学运算
+
+shell脚本中的变量常用于数学运算当中，示例如下：
+
+[root@localhost shell]# vi sum.sh      #创建一个名为sum.sh的脚本
+
+[root@localhost shell]# cat sum.sh
+
+#!/bin/bash
+
+a=1
+
+b=2
+
+sum=$[$a+$b]          #还可以采用sum=$(($a+$b))这种写法
+
+echo "$a+$b=$sum"
+
+[root@localhost shell]# sh sum.sh       #执行脚本
+
+1+2=3
+
+
+
+shell中的逻辑判断
+
+不带有else
+
+基础结构：
+
+if  判断语句; then
+
+    command
+
+fi
+
+示例如下：
+
+[root@localhost shell]# vi if1.sh
+
+[root@localhost shell]# cat if1.sh
+
+#!/bin/bash
+
+
+
+a=10
+
+if [ $a -gt 4 ]
+
+then
+
+echo ok
+
+fi
+
+
+
+[root@localhost shell]# sh -x if1.sh     #执行脚本
+
++ a=10
+
++ '[' 10 -gt 4 ']'
+
++ echo ok
+
+ok
+
+[root@localhost shell]# sh -n if1.sh
+
+
+
+4.2 带有else
+
+基础结构：
+
+if  判断语句  ; then
+
+    command
+
+else
+
+    command
+
+fi
+
+示例如下：
+
+[root@localhost shell]# vi if2.sh
+
+[root@localhost shell]# cat if2.sh
+
+#!/bin/bash
+
+
+
+a=10
+
+if [ $a -gt 4 ]
+
+then
+
+echo ok
+
+else
+
+echo "not ok"
+
+fi
+
+
+
+[root@localhost shell]# sh -x if2.sh        #执行脚本
+
++ a=10
+
++ '[' 10 -gt 4 ']'
+
++ echo ok
+
+ok
+
+
+
+4.3 带有elif
+
+示例如下：
+
+[root@localhost shell]# vi if3.sh
+
+[root@localhost shell]# cat if3.sh
+
+#!/bin/bash
+
+
+
+a=3
+
+if [ $a -gt 4 ]
+
+then
+
+echo ok
+
+elif [ $a -gt 8 ]
+
+then
+
+echo "very ok"
+
+else
+
+echo "not ok"
+
+fi
+
+
+
+[root@localhost shell]# sh -x if3.sh     #执行脚本
+
++ a=3
+
++ '[' 3 -gt 4 ']'
+
++ '[' 3 -gt 8 ']'
+
++ echo 'not ok'
+
+not ok
+
+
+
+4.4 嵌套
+
+示例如下：
+
+[root@localhost shell]# vi if4.sh
+
+[root@localhost shell]# cat if4.sh
+
+#!/bin/bash
+
+
+
+a=10
+
+if [ $a -gt 4 ]
+
+then
+
+if [ $a -lt 20 ]
+
+then
+
+echo "ok"
+
+else
+
+echo "very ok"
+
+fi
+
+else
+
+echo "not ok"
+
+fi
+
+
+
+[root@localhost shell]# sh -x if4.sh       #执行脚本
+
++ a=10
+
++ '[' 10 -gt 4 ']'
+
++ '[' 10 -lt 20 ']'
+
++ echo ok
+
+ok
+
+
+
+4.5 多个条件
+
+if [ $a -gt 5 ] && [ $a -lt 10 ] == if [ $a -gt 5 -a $a -lt 10]     # -a表示 and
+
+if [ $b -gt 5 ] || [ $b -lt 3] == if [ $b -gt 5 -o $b -lt 3 ]        # -o表示 or
+
+4.6 If逻辑判断
+
+4.6.1 if判断文件的目录属性
+
+shell脚本中if经常用于判断文档的属性，比如判断是普通文件还是目录，判断文件是否有读、写、执行权限等。If常用选项如下：
+
+-e:判断文件或目录是否存在。
+
+-d:判断是不是目录以及是否存在。
+
+-f:判断是不是普通文件以及是否存在。
+
+-T:判断是否有读权限。
+
+-w:判断是否有写权限。
+
+-X:判断是否可执行。
+
+
+
+注意：root用户对文件的读写比较特殊，即使一个文件没有给root用户读或者写的权限，root也可以读或者写。
+
+4.6.2 if判断的一些特殊用法
+
+命令 if [ -z "$a" ]; 表示当变量a的值为空时会怎么样，如下图所示：
+
+
+
+命令  if [ -n "$a" ]; 表示当变量a的值不为空时会怎么样，如下图所示：
+
+
+
+命令 if grep -q '123' 1.sh; then 表示如果1.sh中含有’123’会怎么样，其中-q表示即使过滤出内容也不要打印出来，如下图所示：
+
+
+
+ if (($a<1)); then 等同于 if [ $a -lt 1 ];then 二者都可以用来进行判断，需要注意的是，当我们未对变量a进行赋值时则会报错，如下图所示:
+
+
+
+注意：[ ]中不能使用<,>,==,!=,>=,<=这样的符号，需要时要使用固定写法 -gt (>); -lt(<); -ge(>=); -le(<=);-eq(==); -ne(!=)。
+
+4.7 shell中的case判断
+
+case判断的基础格式如下：
+
+case 变量 in
+
+value1）                    #不限制value的个数
+
+command
+
+;;
+
+value2）
+
+command
+
+;;
+
+*)                         #此处*代表其他值
+
+command 
+
+;;
+
+esac
+
+为了让我们能够更加清晰的理解case逻辑判断，接下来我们编写一个脚本来进行实验，内容如下：
+
+[root@localhost shell]# vi case.sh 
+
+#!/bin/bash
+
+read -p "Please input a number:" n 
+
+if [ -z "$n" ]
+
+then
+
+   echo "Please input a number." 
+
+   exit 1 
+
+fi
+
+
+
+n1=`echo $n|sed 's/[0-9]//g'`
+
+if [ -n "$n1" ]
+
+then
+
+ echo "Please input a number."
+
+ exit 1 
+
+fi
+
+
+
+if [ $n -lt 60 ] && [ $n -ge 0 ] 
+
+then
+
+    tag=1
+
+elif [ $n -ge 60 ] && [ $n -lt 80 ] 
+
+then
+
+    tag=2
+
+elif [ $n -ge 80 ] && [ $n -lt 90 ] 
+
+then
+
+    tag=3
+
+elif [ $n -ge 90 ] && [ $n -le 100 ] 
+
+then
+
+    tag=4 
+
+else
+
+    tag=0 
+
+fi
+
+case $tag in
+
+   1)
+
+     echo "not ok"
+
+     ;;
+
+   2)
+
+     echo "ok"
+
+     ;;
+
+   3)
+
+     echo "very ok"
+
+     ;;
+
+   4)
+
+     echo "oook"
+
+     ;;
+
+   *)
+
+     echo "The number range is 0-100."
+
+     ;;
+
+esac
+
+执行结果：
+
+
+
+shell中的循环
+
+5.1 for循环
+
+基础结构如下：
+
+for 变量名 in 循环条件；
+
+do
+
+command
+
+done
+
+下面进行一个简单的实验演示，演示如下：
+
+[root@localhost shell]# vi for1.sh
+
+#！/bin/bash
+
+sum=0
+
+for i in `seq 1 10`
+
+do
+
+   sum=$[$sum+$i]
+
+   echo $i
+
+done
+
+echo $sum
+
+执行结果：
+
+
+
+5.2 while循环
+
+基础结构：
+
+while 条件; do
+
+command
+
+done
+
+示例1：
+
+[root@localhost shell]# vi while1.sh
+
+#!/bin/bash
+
+while ：               #此处冒号表示死循环
+
+do
+
+load=`w|head -1|awk -F 'load average:' '{print $2}'|cut -d. -f1`     #赋值给变量load
+
+if [ $load -gt 10 ]
+
+then
+
+top|mail-s "load is high: $load" asldkfls011.com
+
+fi
+
+sleep 30
+
+done
+
+运行结果：
+
+
+
+示例2：
+
+[root@localhost shell]# vi while2.sh          #创建一个脚本
+
+#!/bin/bash 
+
+while :
+
+do
+
+  read -p "Please input a number: " n
+
+  if [ -z "$n" ] 
+
+  then
+
+      echo "you need input sth." 
+
+      continue 
+
+  fi
+
+  n1=`echo $n|sed 's/[0-9]//g '`
+
+  if [ -n "$n1" ] 
+
+  then
+
+      echo "you just only input numbers." 
+
+      continue 
+
+  fi
+
+  break 
+
+done 
+
+echo $n
+
+运行结果：
+
+
+
+Shell中的中断与继续
+
+6.1 跳出循环
+
+break在脚本中表示跳出该层循环，示例如下：
+
+[root@localhost shell]# vi break1.sh
+
+#!/bin/bash
+
+for i in `seq 1 5` 
+
+do
+
+   echo $i
+
+   if [ $i -eq 3 ] 
+
+   then
+
+       break 
+
+   fi
+
+  echo $i 
+
+done
+
+echo aaaaa
+
+执行结果：
+
+
+
+6.2 结束本次循环
+
+当在shell脚本中使用continue时，结束的不是整个循环，而是本次循环。忽略continue之下的代码，直接进行下一次循环。示例如下：
+
+[root@localhost shell]#vi continue1.sh         #创建一个shell脚本
+
+#!/bin/bash
+
+for i in `seq 1 5 `
+
+do
+
+   echo $i
+
+   if [ $i == 3 ] 
+
+   then
+
+       continue          #此处continue表示若 $i == 3 则结束本次循环
+
+   fi
+
+   echo $i 
+
+done 
+
+echo $i
+
+执行结果：
+
+6.3 退出整个脚本
+
+当我们在shell脚本中遇到exit时，其表示直接退出整个shell脚本。示例如下：
+
+[root@localhost shell]# vi exit1.sh
+
+#!/bin/bash
+
+for i in `seq 1 5`
+
+do
+
+   echo $i
+
+   if [ $i == 3 ] 
+
+   then
+
+       exit 
+
+   fi
+
+   echo $i 
+
+done
+
+echo aaaa
+
+执行结果：
+
+
+
+Shell中的函数
+
+shell脚本中的函数就是先把一段代码整理到了一个小单元中，并给这个小单元命名，当我们用到这段代码时直接调用这个小单元的名字就可以了，这样很方便，省时省力。但我们需要注意，在shell脚本中，函数一定要写在前面，因为函数要被调用的，如果还未出现就被调用就会出错。
+
+基础格式：
+
+function f_name()
+
+{
+
+command
+
+}
+
+打印出第一个、第二个参数、参数的个数及脚本名
+
+示例如下：
+
+[root@localhost shell]# vi fun1.sh
+
+#/bin/bash
+
+input()
+
+{
+
+echo $1 $2 $# $0         # 函数的参数：$1 $2 $# ；$0则是脚本的名字
+
+}
+
+input 1 a b
+
+执行结果：
+
+
+
+加法的函数
+
+示例如下：
+
+[root@localhost shell]# vi fun2.sh
+
+#!/bin/bash
+
+sum()
+
+{
+
+s=$[$1+$2]
+
+echo $s
+
+}
+
+sum 1 2
+
+执行结果：
+
+
+
+7.3获得一个网卡的IP地址
+
+示例如下：
+
+[root@localhost shell]# vi fun3.sh
+
+#!/bin/bash
+
+ip()
+
+{
+
+ifconfig |grep -A1 "$1: " |tail -1 |awk '{print $2}'
+
+}
+
+read -p "Please input the eth name: " e
+
+myip=`ip $e`
+
+echo "$e address is $myip"
+
+执行结果：
+
+
+
+shell中的数组
+
+数组读取
+
+首先我们需要先定义一个数组a=(1 2 3 4 5);
+
+命令 echo ${a[@]} 读取数组中的全部元素。示例如下：
+
+
+
+命令 echo ${#a[@]} 获取数组的元素个数。示例如下：
+
+
+
+命令 echo ${a[2]} 读取第三个元素，数组从0开始。示例如下：
+
+
+
+echo ${a[*]} 等同于 ${a[@]}  作用为显示整个数组。示例如下：
+
+
+
+8.2 数组赋值
+
+a[1]=100; echo ${a[@]}  替换指定的元素值。示例如下：
+
+
+
+a[5]=2; echo ${a[@]}  如果下标不存在则会自动添加一个元素。示例如下：
+
+
+
+a[7]=6; echo ${a[@]}   跳着添加元素时，中间未赋值的元素，不显示且无值。示例如下：
+
+
+
+
+
+8.3 数组的删除
+
+命令unset a[1] 用于删除单个元素。示例如下：
+
+
+
+命令unset a 用于删除整个数组。示例如下：
+
+
+
+8.4 数组分片
+
+在进行实验操作之前，需要对一个数组进行赋值  a=(`seq 1 5`) 。
+
+命令echo ${a[@]:0:3}  表示从第一个元素开始，截取3个元素，并打印出来。示例如下：
+
+
+
+命令echo ${a[@]:1:4}  表示从第二个元素开始，截取4个元素，并打印出来。示例如下：
+
+
+
+echo ${a[@]:0-3:2}  表示从倒数第3个元素开始，截取2个元素，并打印出来。示例如下：
+
+
+
+8.5 数组替换
+
+使用命令echo ${a[@]/b/100}   表示用100替换b,但不会保存替换，只是打印出来。示例如下：
+
+
+
+使用命令a=(${a[@]/b/100})   表示用100替换b,这种方法不仅可以打印出来还可以保存替换。示例如下：
+
